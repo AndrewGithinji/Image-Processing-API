@@ -1,18 +1,21 @@
-import express from 'express';
+import express, { Response } from 'express';
+import fs from 'fs';
+import path from 'path';
+import routes from './routes/index';
+
 const app = express();
-const port = 3000; 
+const port = 3000;
 
-// Created an endpoint // 
+app.use('/api', routes);
 
-app.get ('/', (req , res) => {
-    res.redirect('/api');
-});
-app.get ('/api', (req, res) => {
-    res.send('First Image Processor');
+app.get('/', (_, res) => {
+    res.status(200).send('Server is working!');
 });
 
-// Starting the express server //
+if (!fs.existsSync(path.resolve(__dirname, '../assets/thumb'))) {
+    fs.mkdirSync(path.resolve(__dirname, '../assets/thumb'));
+}
 
-app.listen(port, () => {
-    console.log(`server started at http://localhost:${port}`);
-});
+app.listen(port, () => console.log(`Running on port ${port}`));
+
+export default app;
