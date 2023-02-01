@@ -1,20 +1,22 @@
-import express, { query } from 'express';
-import fs from 'fs/promises';
-import path from 'path';
+const express = require('express');
+const fs = require('fs/promises');
+const path = require('path');
 
-const imagesRouter = express.Router();
+const listImagesRouter = express.Router();
 
-imagesRouter.get('/', async (req , res): Promise <void> => {
-    const filename = req.query['filename']; 
-    const height = req.query['height']? parseInt(req.query['height'] as string): null
-    const width = req.query['width']?  parseInt(req.query['width'] as string): null
-      
+listImagesRouter.get('/', async (req: any, res: { send: (arg0: string) => void; status: (arg0: number) => { (): any; new(): any; send: { (arg0: string): void; new(): any; }; }; }) => {
+  const folderPath = path.resolve(__dirname, '../../../assets/full');
+  try {
+    const files = await fs.readdir(folderPath);
+    let html = `<h1>Available images</h1><p>List of images:</p><ul>`;
+    files.forEach((file: any) => {
+      html += `<li>${file}</li>`;
+    });
+    html += `</ul>`;
+    res.send(html);
+  } catch (error) {
+    res.status(500).send('Error reading images');
+  }
 });
 
-// Get the file path of the filename //
-const folderPathFullImage = `${path.resolve(__dirname,`../../../assets/images/${__filename}.jpeg`)}`;
-
-// Resized Image from folderPathfullImage //
-const folderPathImage = `${path.resolve(__dirname,`../../../assets/img/${__filename}-${height}x${width}.jpeg`)}`;
-
-export default imagesRouter
+export default listImagesRouter;
